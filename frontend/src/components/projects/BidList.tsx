@@ -6,12 +6,10 @@ import {
   Avatar,
   Badge,
   Button,
-  Divider,
   Flex,
   Card,
   CardBody,
   Icon,
-  useColorModeValue,
   useDisclosure,
   Modal,
   ModalOverlay,
@@ -21,7 +19,6 @@ import {
   ModalCloseButton,
   FormControl,
   FormLabel,
-  Input,
   Textarea,
   FormErrorMessage,
   useToast,
@@ -41,12 +38,6 @@ import apiService from '@/api/ApiConfig';
 import { format } from 'date-fns';
 import { BidStatus, userRole } from '@/AllEnums';
 
-interface Freelancer {
-  id: number;
-  name: string;
-  avatar?: string;
-  rating: number;
-}
 
 interface BidFormData {
   amount: number;

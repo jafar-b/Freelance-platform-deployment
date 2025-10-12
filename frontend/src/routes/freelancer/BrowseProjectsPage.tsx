@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Heading,
@@ -228,21 +228,21 @@ function BrowseProjectsPage() {
   };
   
   // Simple debug component for development
-  const DebugProjects = () => (
-    <Box mt={6} p={4} bg="gray.50" borderRadius="md">
-      <Heading size="sm" mb={2}>Debug Projects Data</Heading>
-      <Text>Total projects: {projects.length}</Text>
-      <Text>Filtered projects: {filteredProjects.length}</Text>
-      {filteredProjects.map(project => (
-        <Box key={project.id} p={2} my={2} bg="white" borderRadius="md" boxShadow="sm">
-          <Text fontWeight="bold">{project.title}</Text>
-          <Text>ID: {project.id}</Text>
-          <Text>Category: {typeof project.category === 'string' ? project.category : project.category.name}</Text>
-          <Text>Budget: ${typeof project.budget === 'string' ? project.budget : project.budget.toFixed(2)}</Text>
-        </Box>
-      ))}
-    </Box>
-  );
+  // const DebugProjects = () => (
+  //   <Box mt={6} p={4} bg="gray.50" borderRadius="md">
+  //     <Heading size="sm" mb={2}>Debug Projects Data</Heading>
+  //     <Text>Total projects: {projects.length}</Text>
+  //     <Text>Filtered projects: {filteredProjects.length}</Text>
+  //     {filteredProjects.map(project => (
+  //       <Box key={project.id} p={2} my={2} bg="white" borderRadius="md" boxShadow="sm">
+  //         <Text fontWeight="bold">{project.title}</Text>
+  //         <Text>ID: {project.id}</Text>
+  //         <Text>Category: {typeof project.category === 'string' ? project.category : project.category.name}</Text>
+  //         <Text>Budget: ${typeof project.budget === 'string' ? project.budget : project.budget.toFixed(2)}</Text>
+  //       </Box>
+  //     ))}
+  //   </Box>
+  // );
   
   return (
     <Box>

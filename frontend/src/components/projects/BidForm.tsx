@@ -12,7 +12,6 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   InputGroup,
-  InputLeftAddon,
   Box,
   HStack,
   useToast,

@@ -66,7 +66,7 @@ function CreateProjectPage() {
       console.log('Sending project data:', formattedData);
       return apiService.projects.create(formattedData);
     },
-    onSuccess: (response) => {
+    onSuccess: () => {
       toast({
         title: 'Project created successfully!',
         status: 'success',
