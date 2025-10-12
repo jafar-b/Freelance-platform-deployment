@@ -291,5 +291,5 @@ The application features a dynamic user interface that adapts to the user's role
 - **Active Contracts**: View and manage ongoing project work
 
 The role-based routing is implemented using protected routes in React Router, with the user's role stored in the authentication context. The backend enforces these role restrictions through guards and decorators that validate the user's role before allowing access to specific endpoints.
-#   F r e e l a n c e - p l a t f o r m - d e p l o y m e n t  
- 
+
+
