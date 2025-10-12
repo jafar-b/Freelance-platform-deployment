@@ -19,7 +19,7 @@ export class UploadsController {
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(@UploadedFile() file: any) {
     const savedFile = await this.fileRepository.save({
       fileName: file.originalname.toString(),
       filePath: this.uploadsService.getFileUrl(file.filename),

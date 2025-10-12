@@ -1,72 +1,61 @@
-# syntax=docker/dockerfile:1
+# -----------------------------
+# Stage 1: Base image
+# -----------------------------
+FROM node:20-alpine AS base
 
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/go/dockerfile-reference/
-
-# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
-
-ARG NODE_VERSION=20.19.4
-
-################################################################################
-# Use node image for base image for all stages.
-FROM node:${NODE_VERSION}-alpine as base
-
-# Set working directory for all build stages.
 WORKDIR /usr/src/app
+ENV NODE_ENV=production
 
+# -----------------------------
+# Stage 2: Install dependencies
+# -----------------------------
+FROM base AS deps
 
-################################################################################
-# Create a stage for installing production dependecies.
-FROM base as deps
+# Copy only package files first
+COPY package.json package-lock.json ./
 
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.npm to speed up subsequent builds.
-# Leverage bind mounts to package.json and package-lock.json to avoid having to copy them
-# into this layer.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev
+# Install all dependencies including dev (needed for TS build)
+RUN npm ci
 
-################################################################################
-# Create a stage for building the application.
-FROM deps as build
+# -----------------------------
+# Stage 3: Build
+# -----------------------------
+FROM deps AS build
 
-# Download additional development dependencies before building, as some projects require
-# "devDependencies" to be installed to build. If you don't need this, remove this step.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci
-
-# Copy the rest of the source files into the image.
+# Copy all source files
 COPY . .
-# Run the build script.
+
+# Install Nest CLI globally (if needed)
+RUN npm install -g @nestjs/cli
+
+# Build the app
 RUN npm run build
 
-################################################################################
-# Create a new stage to run the application with minimal runtime dependencies
-# where the necessary files are copied from the build stage.
-FROM base as final
+# -----------------------------
+# Stage 4: Final image
+# -----------------------------
+FROM node:20-alpine AS final
 
-# Use production node environment by default.
-ENV NODE_ENV production
+WORKDIR /usr/src/app
+ENV NODE_ENV=production
 
-# Run the application as a non-root user.
-USER node
+# Use non-root user for safety
 
-# Copy package.json so that package manager commands can be used.
-COPY package.json .
-
-# Copy the production dependencies from the deps stage and also
-# the built application from the build stage into the image.
+# Copy only production dependencies
 COPY --from=deps /usr/src/app/node_modules ./node_modules
+
+# Copy built files
 COPY --from=build /usr/src/app/dist ./dist
 
+# Copy package.json (optional, sometimes needed for npm scripts)
+COPY --from=build /usr/src/app/package.json ./
+RUN mkdir  /usr/src/app/uploads 
+RUN chmod a+x /usr/src/app/
+  
+# Expose app port
+EXPOSE 5000
+USER node
 
-# Expose the port that the application listens on.
-EXPOSE 80
+# Run the app
+CMD ["node", "dist/main"]
 
-# Run the application.
-CMD npm start

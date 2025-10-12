@@ -104,12 +104,12 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload, {
       secret: this.jwtConstants.accessSecret,
       expiresIn: this.jwtConstants.accessExpiresIn,
-    });
+    } as any);
     
     const refreshToken = this.jwtService.sign(payload, {
       secret: this.jwtConstants.refreshSecret,
       expiresIn: this.jwtConstants.refreshExpiresIn,
-    });
+    } as any);
 
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);    
     if (payload.role === UserRole.CLIENT) {

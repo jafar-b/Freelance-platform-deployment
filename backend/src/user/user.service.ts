@@ -80,7 +80,7 @@ export class UserService {
     return result;
   }
 
-  async uploadAvatar(userId: string, file: Express.Multer.File) {
+  async uploadAvatar(userId: string, file: any) {
     console.log('Service received file:', file); // Debug log
     
     if (!file) {

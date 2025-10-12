@@ -43,7 +43,7 @@ export class InvoicesController {
   async create( 
     @Body() body: any,
     @Request() req,
-    @UploadedFiles() files: Array<Express.Multer.File>,
+  @UploadedFiles() files: Array<any>,
   ) {
     console.log('Received files:', files ? files.length : 0);
     if (files && files.length > 0) {

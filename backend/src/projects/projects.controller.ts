@@ -32,7 +32,7 @@ export class ProjectsController {
   create(
     @Body() createProjectDto: CreateProjectDto, 
     @Request() req,
-    @UploadedFiles() files: Array<Express.Multer.File>,
+  @UploadedFiles() files: Array<any>,
   ) {
     return this.projectsService.create(createProjectDto, req.user.userId, files);
   }

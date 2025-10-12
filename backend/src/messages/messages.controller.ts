@@ -70,7 +70,7 @@ export class MessagesController {
     @Param('projectId') projectId: string,
     @Body() createMessageDto: CreateMessageDto,
     @Request() req,
-    @UploadedFiles() files: Array<Express.Multer.File>,
+  @UploadedFiles() files: Array<any>,
   ) {
     return this.messagesService.sendMessage(
       +projectId,

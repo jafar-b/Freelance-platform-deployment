@@ -133,7 +133,7 @@ export class MessagesService {
     projectId: number,
     userId: number,
     createMessageDto: CreateMessageDto,
-    files: Array<Express.Multer.File>,
+  files: Array<any>,
   ) {
     const project = await this.projectRepository.findOne({
       where: { id: projectId },

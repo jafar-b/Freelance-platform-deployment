@@ -13,7 +13,7 @@ export class ProjectsService {
     private readonly uploadsService: UploadsService,
   ) {}
 
-  async create(createProjectDto: CreateProjectDto, clientId: string, files: Array<Express.Multer.File> = []) {
+  async create(createProjectDto: CreateProjectDto, clientId: string, files: Array<any> = []) {
     const attachments = files.length > 0 ? files.map(file => this.uploadsService.getFileUrl(file.filename)) : [];
     
     // Ensure status is set to OPEN by default

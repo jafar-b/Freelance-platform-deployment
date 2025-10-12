@@ -46,7 +46,7 @@ export class UserController {
   )
   uploadAvatar(
     @Request() req, 
-    @UploadedFile() file: Express.Multer.File
+    @UploadedFile() file: any
   ) {
     console.log('Controller received file:', file); // Debug log
     if (!file) {
