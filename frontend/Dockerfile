@@ -1,72 +1,18 @@
-# syntax=docker/dockerfile:1
+# Use a standard Node.js image
+FROM node:20-alpine
 
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/go/dockerfile-reference/
-
-# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
-
-ARG NODE_VERSION=20.19.4
-
-################################################################################
-# Use node image for base image for all stages.
-FROM node:${NODE_VERSION}-alpine as base
-
-# Set working directory for all build stages.
+# Set the working directory in the container
 WORKDIR /usr/src/app
 
+# Copy package.json and package-lock.json first to leverage Docker cache
+COPY package*.json ./
 
-################################################################################
-# Create a stage for installing production dependecies.
-FROM base as deps
+# Install ALL dependencies, including devDependencies
+RUN npm install
 
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.npm to speed up subsequent builds.
-# Leverage bind mounts to package.json and package-lock.json to avoid having to copy them
-# into this layer.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev
-
-################################################################################
-# Create a stage for building the application.
-FROM deps as build
-
-# Download additional development dependencies before building, as some projects require
-# "devDependencies" to be installed to build. If you don't need this, remove this step.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci
-
-# Copy the rest of the source files into the image.
+# Copy the rest of your application source code
 COPY . .
-# Run the build script.
-RUN npm run build
 
-################################################################################
-# Create a new stage to run the application with minimal runtime dependencies
-# where the necessary files are copied from the build stage.
-FROM base as final
-
-# Use production node environment by default.
-ENV NODE_ENV production
-
-# Run the application as a non-root user.
-USER node
-
-# Copy package.json so that package manager commands can be used.
-COPY package.json .
-
-# Copy the production dependencies from the deps stage and also
-# the built application from the build stage into the image.
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/dist ./dist
-
-
-# Expose the port that the application listens on.
-EXPOSE 80
-
-# Run the application.
-CMD npm run start:dev
+# Vite needs to bind to 0.0.0.0 to be accessible from outside the container
+# The --host 0.0.0.0 flag is crucial for Docker
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
