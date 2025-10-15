@@ -1,6 +1,6 @@
  export enum userRole{
-  FREELANCER="FREELANCER",
-  CLIENT="CLIENT",
+  FREELANCER="freelancer",
+  CLIENT="client",
  }
  
   
