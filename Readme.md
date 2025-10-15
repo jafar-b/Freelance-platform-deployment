@@ -21,6 +21,7 @@ https://github.com/user-attachments/assets/f39954e9-16dc-4a94-9198-99a7aa377d73
   - [Prerequisites](#prerequisites)
   - [Backend Setup](#backend-setup)
   - [Frontend Setup](#frontend-setup)
+- [Deployment](#deployment)
 - [API Endpoints](#api-endpoints)
 - [Authentication](#authentication)
 - [Role based display](#rolebased)
@@ -137,7 +138,6 @@ MAX_FILE_SIZE=5000000 # 5MB
 # API Configuration
 API_PREFIX=/api
 ENABLE_CORS=true
-
 ```
 
 ### Frontend
@@ -156,7 +156,6 @@ VITE_ENABLE_NOTIFICATIONS=true
 # Application Settings
 VITE_APP_NAME=SkillSync
 VITE_DEFAULT_ITEMS_PER_PAGE=10
-
 ```
 
 ## Installation and Setup
@@ -168,49 +167,97 @@ VITE_DEFAULT_ITEMS_PER_PAGE=10
 
 ### Backend Setup
 1. Navigate to the backend directory:
-   ```bash
+```bash
    cd backend
-   ```
+```
 
 2. Install dependencies:
-   ```bash
+```bash
    npm install
-   ```
+```
 
 3. Create a PostgreSQL database named `skillsync`
 
 4. Configure your `.env` file with appropriate database credentials
 
 5. Run database migrations:
-   ```bash
+```bash
    npm run migration:run
-   ```
+```
 
 6. Start the development server:
-   ```bash
+```bash
    npm run start:dev
-   ```
+```
 
 ### Frontend Setup
 1. Navigate to the frontend directory:
-   ```bash
+```bash
    cd frontend
-   ```
+```
 
 2. Install dependencies:
-   ```bash
+```bash
    npm install
-   ```
+```
 
 3. Create a `.env` file with your API base URL:
-   ```
+```
    VITE_API_BASE_URL=http://localhost:3000
-   ```
+```
 
 4. Start the development server:
-   ```bash
+```bash
    npm run dev
-   ```
+```
+
+## Deployment
+
+This application is configured for deployment using Docker and Docker Compose.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Running the Application with Docker
+
+1. **Clone the repository** (if you haven't already):
+```bash
+git clone https://github.com/yourusername/skillsync.git
+cd skillsync
+```
+
+2. **Build and run the services**:
+Use Docker Compose to build the images and start the containers for the frontend, backend, database, and Nginx server.
+```bash
+docker-compose up -d --build
+```
+The `-d` flag runs the containers in detached mode.
+
+3. **Accessing the Application**:
+Once the containers are running, the application will be accessible at:
+- **Frontend**: `http://localhost`
+- **Backend API**: `http://localhost/api`
+
+4. **Database Initialization**:
+On the first run, the backend service may take a moment to connect to the database and apply migrations. The `skillsync_backup.sql` file in the root directory can be used to restore a sample database state if needed. You can restore it by running:
+```bash
+docker-compose exec -T db psql -U postgres -d skillsync < skillsync_backup.sql
+```
+
+5. **Stopping the Application**:
+To stop all the running services, use the following command:
+```bash
+docker-compose down
+```
+
+### Docker Configuration Overview
+
+- `compose.yaml`: Defines the four main services: `skillsync-nginx`, `skillsync-frontend`, `skillsync-backend`, and `db`.
+- `nginx.conf`: Configures Nginx to serve the static frontend files and act as a reverse proxy for the backend API, routing any requests to `/api` to the backend service.
+- `backend/Dockerfile`: A multi-stage Dockerfile that builds the NestJS application and creates a lean production image.
+- `frontend/Dockerfile`: A Dockerfile that builds the React application and outputs the static files to be served by Nginx.
 
 ## API Endpoints
 
@@ -291,5 +338,3 @@ The application features a dynamic user interface that adapts to the user's role
 - **Active Contracts**: View and manage ongoing project work
 
 The role-based routing is implemented using protected routes in React Router, with the user's role stored in the authentication context. The backend enforces these role restrictions through guards and decorators that validate the user's role before allowing access to specific endpoints.
-
-
