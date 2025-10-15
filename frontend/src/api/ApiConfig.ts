@@ -146,7 +146,7 @@ const apiService = {
       api.post('/auth/login', credentials),
 
     register: (userData: Record<string, any>, role: string): Promise<AxiosResponse> => 
-      api.post(`/${role}/register`, userData),
+      api.post(`/${ role.toLocaleLowerCase()}/register`, userData),
 
     refreshToken: (refreshToken: string): Promise<AxiosResponse> => 
       api.post('/auth/refresh', { refreshToken }),
