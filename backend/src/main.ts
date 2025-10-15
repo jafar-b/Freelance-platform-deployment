@@ -13,7 +13,8 @@ async function bootstrap() {
   }
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  
+    // Set global API prefix
+   app.setGlobalPrefix(process.env.API_PREFIX || 'api'); 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     transform: true,
