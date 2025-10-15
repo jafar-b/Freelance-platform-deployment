@@ -3,7 +3,7 @@
 # -----------------------------
 FROM node:20-alpine AS base
 
-WORKDIR /usr/src/app
+WORKDIR /app
 ENV NODE_ENV=production
 
 # -----------------------------
@@ -36,24 +36,24 @@ RUN npm run build
 # -----------------------------
 FROM node:20-alpine AS final
 
-WORKDIR /usr/src/app
+WORKDIR /app
 ENV NODE_ENV=production
 
 # Use non-root user for safety
 
 # Copy only production dependencies
-COPY --from=deps /usr/src/app/node_modules ./node_modules
+COPY --from=deps /app/node_modules ./node_modules
 
 # Copy built files
-COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /app/dist ./dist
 
 # Copy package.json (optional, sometimes needed for npm scripts)
-COPY --from=build /usr/src/app/package.json ./
-RUN mkdir  /usr/src/app/uploads 
-RUN chmod a+x /usr/src/app/
+COPY --from=build /app/package.json ./
+RUN mkdir  /app/uploads 
+RUN chmod a+x /app/
   
 # Expose app port
-EXPOSE 5000
+EXPOSE 3000
 USER node
 
 # Run the app

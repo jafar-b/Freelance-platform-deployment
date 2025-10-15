@@ -1,0 +1,80 @@
+services:
+  #Service 1: nginx server
+  skillsync-nginx:
+    image: nginx:alpine
+    container_name: skillsync_nginx_server
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - frontend_build:/usr/share/nginx/html
+    depends_on:
+      - skillsync-frontend
+      - skillsync-backend
+      - db
+
+  # Service 2: Frontend
+  skillsync-frontend:
+    container_name: skillsync_frontend
+    build:
+      context: ./frontend
+    volumes:
+      - frontend_build:/app/dist
+    command: ["npm", "run", "build"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Service 3: Backend
+
+  skillsync-backend:
+    container_name: skillsync_backend
+    build:
+      context: ./backend
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=1234
+      - DB_DATABASE=skillsync
+      - JWT_ACCESS_SECRET=my_access_secret_key
+      - JWT_REFRESH_SECRET=my_refresh_secret_key
+      - JWT_ACCESS_EXPIRATION=5h
+      - JWT_REFRESH_EXPIRATION=7d
+      - UPLOAD_DIR=uploads
+      - MAX_FILE_SIZE=5000000
+      - API_PREFIX=/api
+      - ENABLE_CORS=true
+    depends_on:
+      - db
+
+  # Service 4: Database
+  db:
+    image: postgres:latest
+    container_name: skillsync_db
+    restart: always
+    user: postgres
+    volumes:
+      
+      - db-data:/var/lib/postgresql/data
+    environment:
+      
+      - POSTGRES_DB=skillsync
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_USER=postgres
+    expose:
+      
+      - "5432"
+    healthcheck:
+      
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  db-data:
+  frontend_build:
