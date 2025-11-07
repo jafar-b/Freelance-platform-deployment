@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+  JWT_ACCESS_SECRET: "my_access_secret_key"
+  JWT_REFRESH_SECRET: "my_refresh_secret_key"
+  JWT_ACCESS_EXPIRATION: "5h"
+  JWT_REFRESH_EXPIRATION: "7d"
+  UPLOAD_DIR: "uploads"
+  MAX_FILE_SIZE: "5000000"
+  API_PREFIX: "/api"
+  ENABLE_CORS: "true"
